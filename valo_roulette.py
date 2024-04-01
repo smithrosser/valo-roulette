@@ -37,17 +37,19 @@ class LobbyPlayerWidget(QWidget):
         self.vr_ = vr  # Reference to main ValoRoulette class
         self.player_name = player_name
 
+        font = QFont("Segoe UI")
+        font.setPointSize(18)
+
         # Set up player widget
         self.layout = QHBoxLayout()
         self.label_player = QLabel(player_name)
         self.label_player.setMinimumHeight(125)
-        font = QFont("Segoe UI")
-        font.setPointSize(18)
         self.label_player.setFont(font)
         self.button_roll = QPushButton("Roll")
         self.button_roll.setMinimumHeight(50)
 
         self.icon_agent = QLabel("?")
+        self.icon_agent.setFont(font)
         self.icon_agent.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.icon_agent.setMinimumSize(125, 125)
         self.icon_agent.setStyleSheet("border: 1px solid #aaaaaa")
