@@ -1,7 +1,7 @@
 import json
 import os
 
-from PyQt6.QtCore import QUrl
+from PyQt6.QtCore import *
 from PyQt6.QtMultimedia import QSoundEffect
 from PyQt6.QtGui import QPixmap
 
@@ -53,7 +53,8 @@ def load_agent_icons(path, width, height):
     agent_icons_file.close()
 
     for key in agent_icon_paths:
-        agent_icons[key] = QPixmap(agent_icon_paths[key]).scaled(width, height)
+        agent_icons[key] = QPixmap(agent_icon_paths[key]).scaled(
+            width, height, transformMode=Qt.TransformationMode.SmoothTransformation)
 
     return agent_icons
 
