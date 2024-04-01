@@ -52,8 +52,9 @@ class PlayerWidget(QWidget):
         self.player_name = player_name
 
         self.layout = QHBoxLayout()
+        self.layout.setContentsMargins(0, 0, 0, 0)
         self.label_player = QLabel(self.player_name)
-        self.label_player.setMinimumWidth(50)
+        self.label_player.setMinimumWidth(100)
         self.widget_map_agents = {}
 
         # Add AgentWidget for each agent in the game
@@ -97,6 +98,7 @@ class MainWindow(QWidget):
         # Set up the player list
         self.layout_players = QVBoxLayout()
         self.layout_players.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.layout_players.setContentsMargins(0, 0, 0, 0)
         self.widget_map_players = {}
         for key in self.editor_.players:
             self.widget_map_players[key] = PlayerWidget(self.editor_, key)
@@ -132,7 +134,7 @@ class MainWindow(QWidget):
 
     # Called when 'Save' button is clicked
     def cb_button_save(self):
-        self.editor_.save_player_data()
+        assets.save_player_data(self.editor_.players, assets.PLAYER_DATA_PATH)
         self.show_message_box("Info", "Saved!")
 
     # Shows a message box

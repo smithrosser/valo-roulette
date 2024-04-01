@@ -57,35 +57,6 @@
         },
         "selected": ""
     },
-    "Jeff": {
-        "agent_pool": {
-            "Astra": true,
-            "Breach": false,
-            "Brimstone": true,
-            "Chamber": true,
-            "Clove": false,
-            "Cypher": true,
-            "Deadlock": false,
-            "Fade": true,
-            "Gekko": true,
-            "Harbor": false,
-            "Iso": true,
-            "Jett": true,
-            "KAY/O": false,
-            "Killjoy": true,
-            "Neon": true,
-            "Omen": false,
-            "Phoenix": true,
-            "Raze": true,
-            "Reyna": false,
-            "Sage": true,
-            "Skye": true,
-            "Sova": false,
-            "Viper": true,
-            "Yoru": false
-        },
-        "selected": ""
-    },
     "Johnas": {
         "agent_pool": {
             "Astra": true,
