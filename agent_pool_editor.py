@@ -8,9 +8,6 @@ from PyQt6.QtWidgets import *
 
 import assets
 
-PLAYER_DATA_PATH = "./players.json"
-AGENT_ICON_DATA_PATH = "./agent_icons.json"
-
 
 class AgentWidget(QWidget):
     def __init__(self, editor, player_name, agent_name):
@@ -163,7 +160,7 @@ class AgentPoolEditor():
         self.players = assets.load_player_data(assets.PLAYER_DATA_PATH)
         self.schema = assets.load_schema(assets.SCHEMA_PATH)
         self.agent_icons = assets.load_agent_icons(
-            AGENT_ICON_DATA_PATH, 32, 32)
+            assets.AGENT_ICON_DATA_PATH, 32, 32)
 
     # Adds a player to the player list
     def add_player(self, player_name):
