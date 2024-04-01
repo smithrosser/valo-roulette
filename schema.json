@@ -1,0 +1,29 @@
+{
+    "agent_pool": {
+        "Astra": true,
+        "Breach": true,
+        "Brimstone": true,
+        "Chamber": true,
+        "Clove": true,
+        "Cypher": true,
+        "Deadlock": true,
+        "Fade": true,
+        "Gekko": true,
+        "Harbor": true,
+        "Iso": true,
+        "Jett": true,
+        "KAY/O": true,
+        "Killjoy": true,
+        "Neon": true,
+        "Omen": true,
+        "Phoenix": true,
+        "Raze": true,
+        "Reyna": true,
+        "Sage": true,
+        "Skye": true,
+        "Sova": true,
+        "Viper": true,
+        "Yoru": true
+    },
+    "selected": ""
+}
