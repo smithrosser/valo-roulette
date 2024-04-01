@@ -1,4 +1,5 @@
 import json
+import os
 
 from PyQt6.QtCore import QUrl
 from PyQt6.QtMultimedia import QSoundEffect
@@ -12,6 +13,10 @@ CLICK_SOUND_PATH = "./res/click.wav"
 
 def load_player_data(path):
     player_data = {}
+
+    # Create empty 'players.json' if it doesn't exist
+    if not os.path.exists(path):
+        save_player_data(player_data, path)
 
     player_data_file = open(path, "r")
     player_data = json.load(player_data_file)
