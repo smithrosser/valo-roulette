@@ -15,8 +15,13 @@ AGENT_RANDOM_WEIGHT = 1
 
 
 class RouletteWorker(QObject):
-    update = pyqtSignal()
+    change_icon = pyqtSignal()
+    play_sound = pyqtSignal()
     finished = pyqtSignal()
+
+    def __init__(self, mute):
+        super().__init__()
+        self.is_muted = mute
 
     # Emits a signal quickly at first, then gradually slower --
     # simulates a spinning roulette wheel (a bit ganky but it works)
@@ -24,7 +29,9 @@ class RouletteWorker(QObject):
         delay = 50.0
 
         for i in range(30):
-            self.update.emit()  # 'click!'
+            self.change_icon.emit()
+            if not self.is_muted:
+                self.play_sound.emit()
 
             QThread.msleep(math.floor(delay))
             if i > 5:
@@ -57,7 +64,7 @@ class LobbyPlayerWidget(QWidget):
         self.icon_agent.setStyleSheet("border: 1px solid #aaaaaa")
 
         # Connect 'clicked' signals to their callback functions
-        self.button_roll.clicked.connect(lambda: self.cb_roll_clicked())
+        self.button_roll.clicked.connect(lambda: self.cb_roll_clicked(False))
 
         self.layout.addWidget(self.label_player)
         self.layout.addWidget(self.button_roll)
@@ -66,16 +73,19 @@ class LobbyPlayerWidget(QWidget):
         self.setLayout(self.layout)
 
     # Called when 'Roll' button is clicked
-    def cb_roll_clicked(self):
+    def cb_roll_clicked(self, mute):
         # Create worker thread to 'spin' through different agents
         self.thread = QThread()
-        self.worker = RouletteWorker()
+        self.worker = RouletteWorker(mute)
 
         # Connect signals to relevant callbacks
         self.worker.moveToThread(self.thread)
         self.thread.started.connect(self.worker.run)
-        self.worker.update.connect(self.cb_roulette_worker_update)
-        self.worker.finished.connect(lambda: self.button_roll.setEnabled(True))
+        self.worker.change_icon.connect(
+            self.cb_roulette_worker_randomize_agent)
+        self.worker.play_sound.connect(self.cb_roulette_worker_play_sound)
+        self.worker.finished.connect(
+            lambda: self.button_roll.setEnabled(True))
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
@@ -85,13 +95,14 @@ class LobbyPlayerWidget(QWidget):
         self.thread.start()
 
     # Called every time roulette wheel 'clicks' -- picks a random agent, displays it
-    def cb_roulette_worker_update(self):
+    def cb_roulette_worker_randomize_agent(self):
         random_agent = self.vr_.get_random_agent(self.player_name)
 
         self.vr_.set_player_agent(self.player_name, random_agent)
         self.set_agent_icon(random_agent)
 
-        # Play a click sound!
+    # Play a click sound!
+    def cb_roulette_worker_play_sound(self):
         self.vr_.sounds["click"].play()
 
     # Sets the agent icon
@@ -114,6 +125,7 @@ class LobbyWidget(QWidget):
         self.button_add = QPushButton("Add")
         self.button_clear = QPushButton("Clear")
         self.checkbox_dealers_choice = QCheckBox("Dealer's Choice")
+        self.button_roll_all = QPushButton("Roll All")
 
         # Lobby player list layout
         self.layout_lobby = QVBoxLayout()
@@ -121,16 +133,18 @@ class LobbyWidget(QWidget):
         self.widget_map_lobby_players = {}
 
         # Connect 'clicked' signals to their callback functions
-        self.button_add.clicked.connect(lambda: self.cb_add_clicked())
-        self.button_clear.clicked.connect(lambda: self.cb_clear_clicked())
+        self.button_add.clicked.connect(self.cb_add_clicked)
+        self.button_clear.clicked.connect(self.cb_clear_clicked)
         self.checkbox_dealers_choice.stateChanged.connect(
-            lambda: self.cb_dealers_choice_state_changed())
+            self.cb_dealers_choice_state_changed)
+        self.button_roll_all.clicked.connect(self.cb_roll_all_clicked)
 
         # Add widgets to layouts
         self.layout_lobby_control.addWidget(self.combo_players)
         self.layout_lobby_control.addWidget(self.button_add)
         self.layout_lobby_control.addWidget(self.button_clear)
         self.layout_lobby_control.addWidget(self.checkbox_dealers_choice)
+        self.layout_lobby_control.addWidget(self.button_roll_all)
         self.layout_lobby_control.setStretch(0, 1)
 
         # Update combobox from player data & update lobby player list
@@ -155,6 +169,13 @@ class LobbyWidget(QWidget):
         new_player = self.combo_players.currentText()
         self.vr_.add_player_to_lobby(new_player)
         self.update_lobby_widget()
+
+    def cb_roll_all_clicked(self):
+        count = 0
+        for key in self.widget_map_lobby_players:
+            self.widget_map_lobby_players[key].cb_roll_clicked(
+                False if count == 0 else True)
+            count += 1
 
     def cb_dealers_choice_state_changed(self):
         self.vr_.is_dealers_choice_enabled = True if self.checkbox_dealers_choice.checkState(
