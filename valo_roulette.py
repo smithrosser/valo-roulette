@@ -49,16 +49,21 @@ class WeaponWidget(QWidget):
         self.current_sidearm = ""
 
         self.layout_main = QVBoxLayout()
+        self.layout_main.setAlignment(Qt.AlignmentFlag.AlignTop)
+
         self.icon_weapon_primary = QLabel("?")
-        self.icon_weapon_primary.setMinimumHeight(125)
+        self.icon_weapon_primary.setFont(self.vr_.font_large)
+        self.icon_weapon_primary.setFixedSize(250, 250)
         self.icon_weapon_primary.setStyleSheet("border: 1px solid #aaaaaa")
         self.icon_weapon_primary.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.button_roll_primary = QPushButton("Roll Primary")
+
         self.icon_weapon_sidearm = QLabel("?")
-        self.icon_weapon_sidearm.setMinimumHeight(125)
+        self.icon_weapon_sidearm.setFont(self.vr_.font_large)
+        self.icon_weapon_sidearm.setFixedSize(250, 250)
         self.icon_weapon_sidearm.setStyleSheet("border: 1px solid #aaaaaa")
         self.icon_weapon_sidearm.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.button_roll_sidearm = QPushButton("Roll Sidearm")
-        self.button_roll_primary = QPushButton("Roll Primary")
 
         self.button_roll_primary.clicked.connect(self.cb_roll_primary_clicked)
         self.button_roll_sidearm.clicked.connect(self.cb_roll_sidearm_clicked)
@@ -151,19 +156,16 @@ class LobbyPlayerWidget(QWidget):
         self.vr_ = vr  # Reference to main ValoRoulette class
         self.player_name = player_name
 
-        font = QFont("Segoe UI")
-        font.setPointSize(18)
-
         # Set up player widget
         self.layout = QHBoxLayout()
         self.label_player = QLabel(player_name)
         self.label_player.setMinimumHeight(125)
-        self.label_player.setFont(font)
+        self.label_player.setFont(self.vr_.font_large)
         self.button_roll = QPushButton("Roll")
         self.button_roll.setMinimumHeight(50)
 
         self.icon_agent = QLabel("?")
-        self.icon_agent.setFont(font)
+        self.icon_agent.setFont(self.vr_.font_large)
         self.icon_agent.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.icon_agent.setMinimumSize(125, 125)
         self.icon_agent.setStyleSheet("border: 1px solid #aaaaaa")
@@ -232,9 +234,11 @@ class LobbyWidget(QWidget):
         self.checkbox_dealers_choice = QCheckBox("Dealer's Choice")
         self.button_roll_all = QPushButton("Roll All")
 
+        self.layout_roulette = QHBoxLayout()
+
         # Lobby player list layout
         self.layout_lobby = QVBoxLayout()
-        self.layout_lobby.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.layout_lobby.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.widget_map_lobby_players = {}
 
         # Lobby weapons layout
@@ -259,10 +263,14 @@ class LobbyWidget(QWidget):
         self.populate_player_combobox()
         self.update_lobby_widget()
 
+        # Add player/weapon roulette layouts side-by-side
+        self.layout_roulette.addLayout(self.layout_lobby)
+        self.layout_roulette.addWidget(self.layout_weapons)
+        self.layout_roulette.setStretch(0, 1)
+
         # Add layouts to main widget
         self.layout_main.addLayout(self.layout_lobby_control)
-        self.layout_main.addLayout(self.layout_lobby)
-        self.layout_main.addWidget(self.layout_weapons)
+        self.layout_main.addLayout(self.layout_roulette)
         self.setLayout(self.layout_main)
 
     # Called when 'Clear' button is clicked
@@ -327,7 +335,7 @@ class MainWindow(QWidget):
 
         self.layout_main.addWidget(self.widget_lobby)
         self.setLayout(self.layout_main)
-        self.setMinimumWidth(500)
+        self.setMinimumWidth(800)
         self.setWindowTitle("VALORANT Agent Roulette")
 
 
@@ -344,6 +352,9 @@ class ValoRoulette:
 
         self.current_lobby = {}
         self.is_dealers_choice_enabled = False
+
+        self.font_large = QFont("Segoe UI")
+        self.font_large.setPointSize(18)
 
     # Add a player to current lobby
     def add_player_to_lobby(self, player_name):
