@@ -7,7 +7,8 @@ from PyQt6.QtGui import QPixmap
 
 PLAYER_DATA_PATH = "./players.json"
 SCHEMA_PATH = "./schema.json"
-AGENT_ICON_DATA_PATH = "./agent_icons.json"
+AGENT_ICON_DATA_PATH = "./icons.json"
+WEAPON_DATA_PATH = "./weapons.json"
 CLICK_SOUND_PATH = "./res/click.wav"
 
 
@@ -52,11 +53,37 @@ def load_agent_icons(path, width, height):
     agent_icon_paths = json.load(agent_icons_file)
     agent_icons_file.close()
 
-    for key in agent_icon_paths:
-        agent_icons[key] = QPixmap(agent_icon_paths[key]).scaled(
+    for key in agent_icon_paths["agents"]:
+        agent_icons[key] = QPixmap(agent_icon_paths["agents"][key]).scaled(
             width, height, transformMode=Qt.TransformationMode.SmoothTransformation)
 
     return agent_icons
+
+
+def load_weapon_icons(path):
+    weapon_icons = {}
+    weapon_icon_paths = {}
+
+    agent_icons_file = open(path, "r")
+    weapon_icon_paths = json.load(agent_icons_file)
+    agent_icons_file.close()
+
+    for key in weapon_icon_paths["weapons"]:
+        icon = QPixmap(weapon_icon_paths["weapons"][key])
+        weapon_icons[key] = icon.scaled(icon.width(
+        ), 125, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+
+    return weapon_icons
+
+
+def load_weapons(path):
+    weapons = {}
+
+    weapons_file = open(path, 'r')
+    weapons = json.load(weapons_file)
+    weapons_file.close()
+
+    return weapons
 
 
 def load_sounds():

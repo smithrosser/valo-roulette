@@ -1,0 +1,53 @@
+{
+    "agents":
+    {
+        "Brimstone": "./res/Brimstone_icon.webp",
+        "Viper": "./res/Viper_icon.webp",
+        "Omen": "./res/Omen_icon.webp",
+        "Killjoy": "./res/Killjoy_icon.webp",
+        "Cypher": "./res/Cypher_icon.webp", 
+        "Sova": "./res/Sova_icon.webp", 
+        "Sage": "./res/Sage_icon.webp", 
+        "Phoenix": "./res/Phoenix_icon.webp", 
+        "Jett": "./res/Jett_icon.webp", 
+        "Reyna": "./res/Reyna_icon.webp", 
+        "Raze": "./res/Raze_icon.webp", 
+        "Breach": "./res/Breach_icon.webp", 
+        "Skye": "./res/Skye_icon.webp", 
+        "Yoru": "./res/Yoru_icon.webp", 
+        "Astra": "./res/Astra_icon.webp", 
+        "KAY/O": "./res/KAYO_icon.webp", 
+        "Chamber": "./res/Chamber_icon.webp", 
+        "Neon": "./res/Neon_icon.webp", 
+        "Fade": "./res/Fade_icon.webp", 
+        "Harbor": "./res/Harbor_icon.webp", 
+        "Gekko": "./res/Gekko_icon.webp", 
+        "Deadlock": "./res/Deadlock_icon.webp", 
+        "Iso": "./res/Iso_icon.webp", 
+        "Clove": "./res/Clove_icon.webp",
+        "Simba": "./res/Simba_icon.webp",
+        "Dealer": "./res/Dealer_icon.webp"
+    },
+    "weapons":
+    {
+        "Ares": "./res/weapons/Ares.webp",
+        "Bucky": "./res/weapons/Bucky.webp",
+        "Bulldog": "./res/weapons/Bulldog.webp",
+        "Classic": "./res/weapons/Classic.webp",
+        "Frenzy": "./res/weapons/Frenzy.webp",
+        "Ghost": "./res/weapons/Ghost.webp",
+        "Guardian": "./res/weapons/Guardian.webp",
+        "Judge": "./res/weapons/Judge.webp",
+        "Marshal": "./res/weapons/Marshal.webp",
+        "Melee": "./res/weapons/Melee.webp",
+        "Odin": "./res/weapons/Odin.webp",
+        "Operator": "./res/weapons/Operator.webp",
+        "Outlaw": "./res/weapons/Outlaw.webp",
+        "Sheriff": "./res/weapons/Sheriff.webp",
+        "Shorty": "./res/weapons/Shorty.webp",
+        "Spectre": "./res/weapons/Spectre.webp",
+        "Stinger": "./res/weapons/Stinger.webp",
+        "Vandal": "./res/weapons/Vandal.webp",
+        "Phantom": "./res/weapons/Phantom.webp"
+    }
+}

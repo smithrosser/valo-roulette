@@ -108,7 +108,7 @@ class MainWindow(QWidget):
         self.layout_main.addLayout(self.layout_players)
         self.setLayout(self.layout_main)
 
-        self.setWindowTitle("VALORANT Agent Roulette | Editor")
+        self.setWindowTitle("VALORANT Agent Roulette | Agent Pool Editor")
 
     # Called when 'Add' button is clicked
     def cb_button_add(self):

@@ -1,0 +1,24 @@
+{
+    "primary": [
+        "Stinger",
+        "Spectre",
+        "Bucky",
+        "Judge",
+        "Bulldog",
+        "Guardian",
+        "Phantom",
+        "Vandal",
+        "Marshal",
+        "Outlaw",
+        "Operator",
+        "Ares",
+        "Odin"
+    ],
+    "sidearm": [
+        "Classic",
+        "Shorty",
+        "Frenzy",
+        "Ghost",
+        "Sheriff"
+    ]
+}

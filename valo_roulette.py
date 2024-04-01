@@ -11,7 +11,7 @@ from PyQt6.QtMultimedia import QSoundEffect
 
 import assets
 
-AGENT_RANDOM_WEIGHT = 1
+AGENT_RANDOM_WEIGHT = 2
 
 
 class RouletteWorker(QObject):
@@ -38,6 +38,111 @@ class RouletteWorker(QObject):
                 delay *= 1.11
 
         self.finished.emit()
+
+
+class WeaponWidget(QWidget):
+    def __init__(self, vr):
+        super().__init__()
+        self.vr_ = vr
+
+        self.current_primary = ""
+        self.current_sidearm = ""
+
+        self.layout_main = QVBoxLayout()
+        self.icon_weapon_primary = QLabel("?")
+        self.icon_weapon_primary.setMinimumHeight(125)
+        self.icon_weapon_primary.setStyleSheet("border: 1px solid #aaaaaa")
+        self.icon_weapon_primary.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.icon_weapon_sidearm = QLabel("?")
+        self.icon_weapon_sidearm.setMinimumHeight(125)
+        self.icon_weapon_sidearm.setStyleSheet("border: 1px solid #aaaaaa")
+        self.icon_weapon_sidearm.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.button_roll_sidearm = QPushButton("Roll Sidearm")
+        self.button_roll_primary = QPushButton("Roll Primary")
+
+        self.button_roll_primary.clicked.connect(self.cb_roll_primary_clicked)
+        self.button_roll_sidearm.clicked.connect(self.cb_roll_sidearm_clicked)
+
+        self.layout_main.addWidget(self.icon_weapon_primary)
+        self.layout_main.addWidget(self.button_roll_primary)
+        self.layout_main.addWidget(self.icon_weapon_sidearm)
+        self.layout_main.addWidget(self.button_roll_sidearm)
+
+        self.setLayout(self.layout_main)
+
+    def cb_roll_primary_clicked(self):
+        # Create worker thread to 'spin' through different guns
+        self.thread_primary = QThread()
+        self.worker_primary = RouletteWorker(False)
+
+        # Connect signals to relevant callbacks
+        self.worker_primary.moveToThread(self.thread_primary)
+        self.thread_primary.started.connect(self.worker_primary.run)
+        self.worker_primary.change_icon.connect(
+            self.cb_roulette_worker_randomize_primary)
+        self.worker_primary.play_sound.connect(
+            self.cb_roulette_worker_play_sound)
+        self.worker_primary.finished.connect(
+            lambda: self.button_roll_primary.setEnabled(True))
+        self.worker_primary.finished.connect(self.thread_primary.quit)
+        self.worker_primary.finished.connect(self.worker_primary.deleteLater)
+        self.thread_primary.finished.connect(self.thread_primary.deleteLater)
+
+        # Disable 'roll' button until finished, start thread
+        self.button_roll_primary.setEnabled(False)
+        self.thread_primary.start()
+
+    def cb_roll_sidearm_clicked(self):
+        # Create worker thread to 'spin' through different guns
+        self.thread_sidearm = QThread()
+        self.worker_sidearm = RouletteWorker(False)
+
+        # Connect signals to relevant callbacks
+        self.worker_sidearm.moveToThread(self.thread_sidearm)
+        self.thread_sidearm.started.connect(self.worker_sidearm.run)
+        self.worker_sidearm.change_icon.connect(
+            self.cb_roulette_worker_randomize_sidearm)
+        self.worker_sidearm.play_sound.connect(
+            self.cb_roulette_worker_play_sound)
+        self.worker_sidearm.finished.connect(
+            lambda: self.button_roll_sidearm.setEnabled(True))
+        self.worker_sidearm.finished.connect(self.thread_sidearm.quit)
+        self.worker_sidearm.finished.connect(self.worker_sidearm.deleteLater)
+        self.thread_sidearm.finished.connect(self.thread_sidearm.deleteLater)
+
+        # Disable 'roll' button until finished, start thread
+        self.button_roll_sidearm.setEnabled(False)
+        self.thread_sidearm.start()
+
+    def cb_roulette_worker_randomize_primary(self):
+        self.get_random_weapon("primary")
+
+    def cb_roulette_worker_randomize_sidearm(self):
+        self.get_random_weapon("sidearm")
+
+    def get_random_weapon(self, type):
+        weapon_pool = self.vr_.weapons[type]
+
+        weapon = random.choice(weapon_pool)
+        if type == "primary":
+            while self.current_primary == weapon:
+                weapon = random.choice(weapon_pool)
+            self.current_primary = weapon
+
+            self.icon_weapon_primary.setPixmap(
+                self.vr_.weapon_icons[self.current_primary])
+
+        else:
+            while self.current_sidearm == weapon:
+                weapon = random.choice(weapon_pool)
+            self.current_sidearm = weapon
+
+            self.icon_weapon_sidearm.setPixmap(
+                self.vr_.weapon_icons[self.current_sidearm])
+
+    # Play a click sound!
+    def cb_roulette_worker_play_sound(self):
+        self.vr_.sounds["click"].play()
 
 
 class LobbyPlayerWidget(QWidget):
@@ -132,6 +237,9 @@ class LobbyWidget(QWidget):
         self.layout_lobby.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.widget_map_lobby_players = {}
 
+        # Lobby weapons layout
+        self.layout_weapons = WeaponWidget(self.vr_)
+
         # Connect 'clicked' signals to their callback functions
         self.button_add.clicked.connect(self.cb_add_clicked)
         self.button_clear.clicked.connect(self.cb_clear_clicked)
@@ -154,6 +262,7 @@ class LobbyWidget(QWidget):
         # Add layouts to main widget
         self.layout_main.addLayout(self.layout_lobby_control)
         self.layout_main.addLayout(self.layout_lobby)
+        self.layout_main.addWidget(self.layout_weapons)
         self.setLayout(self.layout_main)
 
     # Called when 'Clear' button is clicked
@@ -179,6 +288,7 @@ class LobbyWidget(QWidget):
             self.widget_map_lobby_players[key].cb_roll_clicked(
                 False if count == 0 else True)
             count += 1
+            QThread.msleep(5)
 
     def cb_dealers_choice_state_changed(self):
         self.vr_.is_dealers_choice_enabled = True if self.checkbox_dealers_choice.checkState(
@@ -210,7 +320,6 @@ class LobbyWidget(QWidget):
 class MainWindow(QWidget):
     def __init__(self, vr):
         super().__init__()
-
         self.vr_ = vr  # Reference to main ValoRoulette class
 
         self.layout_main = QStackedLayout()
@@ -218,7 +327,7 @@ class MainWindow(QWidget):
 
         self.layout_main.addWidget(self.widget_lobby)
         self.setLayout(self.layout_main)
-        self.setMinimumWidth(480)
+        self.setMinimumWidth(500)
         self.setWindowTitle("VALORANT Agent Roulette")
 
 
@@ -226,8 +335,11 @@ class ValoRoulette:
     def __init__(self):
         # Player/lobby data
         self.players = assets.load_player_data(assets.PLAYER_DATA_PATH)
+        self.weapons = assets.load_weapons(assets.WEAPON_DATA_PATH)
         self.agent_icons = assets.load_agent_icons(
             assets.AGENT_ICON_DATA_PATH, 125, 125)
+        self.weapon_icons = assets.load_weapon_icons(
+            assets.AGENT_ICON_DATA_PATH)
         self.sounds = assets.load_sounds()
 
         self.current_lobby = {}
