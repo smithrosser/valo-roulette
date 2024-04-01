@@ -23,5 +23,6 @@
     "Deadlock": "./res/Deadlock_icon.webp", 
     "Iso": "./res/Iso_icon.webp", 
     "Clove": "./res/Clove_icon.webp",
-    "Simba": "./res/Simba_icon.webp"
+    "Simba": "./res/Simba_icon.webp",
+    "Dealer": "./res/Dealer_icon.webp"
 }

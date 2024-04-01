@@ -11,6 +11,8 @@ from PyQt6.QtMultimedia import QSoundEffect
 
 import assets
 
+AGENT_RANDOM_WEIGHT = 1
+
 
 class RouletteWorker(QObject):
     update = pyqtSignal()
@@ -111,6 +113,7 @@ class LobbyWidget(QWidget):
         self.combo_players = QComboBox()
         self.button_add = QPushButton("Add")
         self.button_clear = QPushButton("Clear")
+        self.checkbox_dealers_choice = QCheckBox("Dealer's Choice")
 
         # Lobby player list layout
         self.layout_lobby = QVBoxLayout()
@@ -120,11 +123,14 @@ class LobbyWidget(QWidget):
         # Connect 'clicked' signals to their callback functions
         self.button_add.clicked.connect(lambda: self.cb_add_clicked())
         self.button_clear.clicked.connect(lambda: self.cb_clear_clicked())
+        self.checkbox_dealers_choice.stateChanged.connect(
+            lambda: self.cb_dealers_choice_state_changed())
 
         # Add widgets to layouts
         self.layout_lobby_control.addWidget(self.combo_players)
         self.layout_lobby_control.addWidget(self.button_add)
         self.layout_lobby_control.addWidget(self.button_clear)
+        self.layout_lobby_control.addWidget(self.checkbox_dealers_choice)
         self.layout_lobby_control.setStretch(0, 1)
 
         # Update combobox from player data & update lobby player list
@@ -149,6 +155,10 @@ class LobbyWidget(QWidget):
         new_player = self.combo_players.currentText()
         self.vr_.add_player_to_lobby(new_player)
         self.update_lobby_widget()
+
+    def cb_dealers_choice_state_changed(self):
+        self.vr_.is_dealers_choice_enabled = True if self.checkbox_dealers_choice.checkState(
+        ) == Qt.CheckState.Checked else False
 
     # Adds players to the 'players' dropdown menu
     def populate_player_combobox(self):
@@ -197,6 +207,7 @@ class ValoRoulette:
         self.sounds = assets.load_sounds()
 
         self.current_lobby = {}
+        self.is_dealers_choice_enabled = False
 
     # Add a player to current lobby
     def add_player_to_lobby(self, player_name):
@@ -226,7 +237,12 @@ class ValoRoulette:
         for key in self.players[player_name]["agent_pool"]:
             # Add to agent_pool list if available
             if self.players[player_name]["agent_pool"][key] == True and not self.is_agent_taken(key):
-                agent_pool.append(key)
+                # Weight agents over dealer's choice more
+                for i in range(AGENT_RANDOM_WEIGHT):
+                    agent_pool.append(key)
+
+        if self.is_dealers_choice_enabled and not self.players[player_name]["selected"] == "Dealer":
+            agent_pool.append("Dealer")
 
         return agent_pool
 
