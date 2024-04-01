@@ -171,6 +171,9 @@ class LobbyWidget(QWidget):
         self.update_lobby_widget()
 
     def cb_roll_all_clicked(self):
+        if not self.vr_.current_lobby:
+            return
+
         count = 0
         for key in self.widget_map_lobby_players:
             self.widget_map_lobby_players[key].cb_roll_clicked(
