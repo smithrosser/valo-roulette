@@ -51,7 +51,7 @@ class WeaponWidget(QWidget):
         self.layout = QVBoxLayout()
         self.icon_weapon = QLabel("?",)
         self.icon_weapon.setFont(self.vr_.font_large)
-        self.icon_weapon.setFixedSize(250, 250)
+        self.icon_weapon.setFixedSize(220, 220)
         self.icon_weapon.setStyleSheet("border: 1px solid #aaaaaa")
         self.icon_weapon.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.button_roll = QPushButton("Roll " + self.weapon_class)
@@ -183,7 +183,8 @@ class LobbyWidget(QWidget):
         self.button_add = QPushButton("Add")
         self.button_clear = QPushButton("Clear")
         self.checkbox_dealers_choice = QCheckBox("Dealer's Choice")
-        self.checkbox_optimal_comps = QCheckBox("Prefer optimal comp")
+        self.checkbox_optimal_comps = QCheckBox("Prefer optimal comp for")
+        self.combo_maps = QComboBox()
 
         self.layout_roulette = QHBoxLayout()
 
@@ -196,6 +197,7 @@ class LobbyWidget(QWidget):
         self.layout_weapons = QVBoxLayout()
         self.layout_weapons.addWidget(WeaponWidget(self.vr_, "primary"))
         self.layout_weapons.addWidget(WeaponWidget(self.vr_, "sidearm"))
+        self.layout_weapons.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         # Connect 'clicked' signals to their callback functions
         self.button_add.clicked.connect(self.cb_add_clicked)
@@ -211,11 +213,17 @@ class LobbyWidget(QWidget):
         self.layout_lobby_control.addWidget(self.button_clear)
         self.layout_lobby_control.addWidget(self.checkbox_dealers_choice)
         self.layout_lobby_control.addWidget(self.checkbox_optimal_comps)
+        self.layout_lobby_control.addWidget(self.combo_maps)
         self.layout_lobby_control.setStretch(0, 1)
 
         # Update combobox from player data & update lobby player list
         self.populate_player_combobox()
+        self.populate_map_combobox()
         self.update_lobby_widget()
+
+        # Disable optimal comps for now
+        self.combo_maps.setEnabled(False)
+        self.checkbox_optimal_comps(False)
 
         # Add player/weapon roulette layouts side-by-side
         self.layout_roulette.addLayout(self.layout_lobby)
@@ -254,6 +262,13 @@ class LobbyWidget(QWidget):
         for key in self.vr_.players:
             self.combo_players.addItem(key)
 
+    def populate_map_combobox(self):
+        maps = ["Ascent", "Lotus", "Icebox",
+                "Sunset", "Split", "Bind", "Breeze"]
+
+        for map in maps:
+            self.combo_maps.addItem(map)
+
     # Updates the lobby based on players present
     def update_lobby_widget(self):
         # Remove widgets for players that aren't in current lobby (make temp copy to avoid runtime error)
@@ -282,7 +297,7 @@ class MainWindow(QWidget):
 
         self.layout_main.addWidget(self.widget_lobby)
         self.setLayout(self.layout_main)
-        self.setMinimumSize(750, 750)
+        self.setMinimumWidth(700)
         self.setWindowTitle("VALORANT Agent Roulette")
 
 
