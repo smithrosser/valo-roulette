@@ -223,7 +223,7 @@ class LobbyWidget(QWidget):
 
         # Disable optimal comps for now
         self.combo_maps.setEnabled(False)
-        self.checkbox_optimal_comps(False)
+        self.checkbox_optimal_comps.setEnabled(False)
 
         # Add player/weapon roulette layouts side-by-side
         self.layout_roulette.addLayout(self.layout_lobby)
